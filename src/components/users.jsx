@@ -9,8 +9,11 @@ const Users = () => {
     }
 
     const renderQualities = (qualities) => {
-        return qualities.map((qualiti) => {
-            return (<span className={`badge m-1 text-bg-${qualiti.color}`}>{qualiti.name}</span>)
+        return qualities.map((qualiti, ind) => {
+            return (
+            <span key={ind} className={`badge m-1 text-bg-${qualiti.color}`}>
+                {qualiti.name}
+            </span>)
         })
     }
     const renderPhrase = (number) => {
@@ -44,9 +47,9 @@ const Users = () => {
                 </tr>
                 </thead>
                 <tbody>
-                    {users.map((user, id) => {
+                    {users.map((user) => {
                         return (
-                            <tr>
+                            <tr key={user._id}>
                                 <td>{user.name}</td>  
                                 <td>{renderQualities(user.qualities)}</td> 
                                 <td>{user.profession.name}</td>
