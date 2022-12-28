@@ -29,6 +29,7 @@ const Users = () => {
                     {users.map((user) => {
                         return (
                             <User 
+                            key={user._id}
                             name = {user.name} 
                             qualities = {user.qualities}
                             profession = {user.profession.name}
