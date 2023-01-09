@@ -2,6 +2,8 @@ import React,{useState} from "react";
 import api from "../API/index"
 import SerchStatus from "./serchStatus";
 import User from "./user";
+import Pagination from "./pagination";
+import paginate from "../utils/paginate";
 
 const Users = () => {
     const [users, setUsers] = useState(api.users.fetchAll())
@@ -10,8 +12,20 @@ const Users = () => {
         setUsers ((prevState)=>prevState.filter((user)=> user._id !== userId))        
     }
 
+    const count = users.length
+
+    const pageSize = 4
+
+    const handlePageChange = (pageIndex) => {
+        changePage(pageIndex)
+    }
+
+    const [curentPage, changePage] = useState(1)
+
+    const usersCrop = paginate(users, curentPage, pageSize)
+
     const renderTable = () => {
-        if(users.length !== 0){
+        if(count !== 0){
             return (
             <table className="table">
                 <thead>
@@ -26,7 +40,7 @@ const Users = () => {
                 </tr>
                 </thead>
                 <tbody>
-                    {users.map((user) => {
+                    {usersCrop.map((user) => {
                         return (
                             <User 
                             key={user._id}
@@ -47,6 +61,12 @@ const Users = () => {
         <>
             <SerchStatus length={users.length}/>
             {renderTable()}
+            <Pagination 
+                itemsCount = {count} 
+                pageSize = {pageSize} 
+                curentPage = {curentPage}
+                onPageChange = {handlePageChange}
+            />
         </>
     )
 }
