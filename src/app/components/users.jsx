@@ -1,78 +1,92 @@
-import React, { useState } from "react";
-import api from "../API/index";
-import SerchStatus from "./serchStatus";
-import User from "./user";
+import React, { useEffect, useState } from "react";
+import PropTypes from "prop-types";
+import { paginate } from "../utils/paginate";
 import Pagination from "./pagination";
-import paginate from "../utils/paginate";
-
-const Users = () => {
-    const [users, setUsers] = useState(api.users.fetchAll());
-
-    const handleDelete = (userId) => {
-        setUsers((prevState) =>
-            prevState.filter((user) => user._id !== userId)
-        );
-    };
-
-    const count = users.length;
-
+import api from "../API/index";
+import User from "./user";
+import GroupList from "./groupList";
+import SearchStatus from "./searchStatus";
+const Users = ({ users: allUsers, ...rest }) => {
+    const [currentPage, setCurrentPage] = useState(1);
+    const [professions, setProfessions] = useState();
+    const [selectedProf, setSelectedProf] = useState();
     const pageSize = 4;
+    useEffect(() => {
+        api.professions.fetchAll().then((professions) => {
+            setProfessions(professions);
+        });
+    }, []);
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [selectedProf]);
+
+    const handleProfessionSelect = (params) => {
+        setSelectedProf(params);
+    };
 
     const handlePageChange = (pageIndex) => {
-        changePage(pageIndex);
+        setCurrentPage(pageIndex);
     };
 
-    const [curentPage, changePage] = useState(1);
+    const filteredUsers = selectedProf
+        ? allUsers.filter((user) => user.profession.name === selectedProf.name)
+        : allUsers;
+    const count = filteredUsers.length;
+    const usersCrop = paginate(filteredUsers, currentPage, pageSize);
 
-    const usersCrop = paginate(users, curentPage, pageSize);
-
-    const renderTable = () => {
-        if (count !== 0) {
-            return (
-                <table className="table">
-                    <thead>
-                        <tr>
-                            <th scope="col">Имя</th>
-                            <th scope="col">Качества</th>
-                            <th scope="col">Провфессия</th>
-                            <th scope="col">Встретился раз</th>
-                            <th scope="col">Оценка</th>
-                            <th scope="col">Избранное</th>
-                            <th scope="col"></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {usersCrop.map((user) => {
-                            return (
-                                <User
-                                    key={user._id}
-                                    name={user.name}
-                                    qualities={user.qualities}
-                                    profession={user.profession.name}
-                                    completedMeetings={user.completedMeetings}
-                                    rate={user.rate}
-                                    onDelete={handleDelete}
-                                    id={user._id}
-                                />
-                            );
-                        })}
-                    </tbody>
-                </table>
-            );
-        }
+    const clearFilter = () => {
+        setSelectedProf();
     };
+
     return (
-        <>
-            <SerchStatus length={users.length} />
-            {renderTable()}
-            <Pagination
-                itemsCount={count}
-                pageSize={pageSize}
-                curentPage={curentPage}
-                onPageChange={handlePageChange}
-            />
-        </>
+        <div className="d-flex">
+            {professions && (
+                <div className="d-flex flex-column flex-shrink-0 p-3">
+                    <GroupList
+                        selectedItem = {selectedProf}
+                        items={professions}
+                        onItemSelect = {handleProfessionSelect}
+                    />
+                    <button className="btn btn-secondary mt-2"onClick={clearFilter}> Очистить</button>
+                </div>
+            )}
+            <div className="d-flex flex-column ">
+                <SearchStatus length={count} />
+                {count > 0 && (
+                    <table className="table">
+                        <thead>
+                            <tr>
+                                <th scope="col">Имя</th>
+                                <th scope="col">Качества</th>
+                                <th scope="col">Провфессия</th>
+                                <th scope="col">Встретился, раз</th>
+                                <th scope="col">Оценка</th>
+                                <th scope="col">Избранное</th>
+                                <th />
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {usersCrop.map((user) => (
+                                <User {...rest} {...user} key={user._id} />
+                            ))}
+                        </tbody>
+                    </table>
+                )}
+
+                <div className="d-flex justify-content-center">
+                    <Pagination
+                        itemsCount={count}
+                        pageSize={pageSize}
+                        currentPage={currentPage}
+                        onPageChange={handlePageChange}
+                    />
+                </div>
+            </div>
+        </div>
     );
+};
+Users.propTypes = {
+    users: PropTypes.array
 };
 
 export default Users;
