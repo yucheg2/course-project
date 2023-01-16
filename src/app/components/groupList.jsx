@@ -2,10 +2,9 @@ import React from "react";
 import PropTypes from "prop-types";
 
 const GroupList = ({ items, valuePropertie, contentPropertie, selectedItem, onItemSelect }) => {
-    const itemsObject = { ...items };
     return (
         <ul className="list-group">
-            { Object.values(itemsObject).map(item => {
+            { (Array.isArray(items) ? items : Object.values(items)).map(item => {
                 return (
                     <li
                         className={"list-group-item" + (item === selectedItem ? " active" : "")}
