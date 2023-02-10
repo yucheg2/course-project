@@ -75,7 +75,7 @@ const Users = () => {
         const filteredUsers = selectedProf
             ? users.filter((user) => JSON.stringify(user.profession) === JSON.stringify(selectedProf))
             : users;
-        const sortedUsers = _.orderBy(filteredUsers, [sortBy.path], [sortBy.order]);
+        const sortedUsers = _.orderBy((serchedUsers || filteredUsers), [sortBy.path], [sortBy.order]);
         const count = serchedText ? serchedUsers.length : filteredUsers.length;
         const usersCrop = paginate(sortedUsers, currentPage, pageSize);
 
@@ -100,7 +100,7 @@ const Users = () => {
                     />
                     {count > 0 && (
                         <UserTable
-                            users={serchedUsers || usersCrop}
+                            users={usersCrop}
                             onSort={handleSort}
                             selectedSort={sortBy}
                             onDelete={handleDelete}
