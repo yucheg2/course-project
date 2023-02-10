@@ -7,6 +7,7 @@ import GroupList from "./groupList";
 import SearchStatus from "./searchStatus";
 import UserTable from "./usersTable";
 import _ from "lodash";
+import SerchInput from "./searchInput";
 
 const Users = () => {
     const [currentPage, setCurrentPage] = useState(1);
@@ -14,6 +15,7 @@ const Users = () => {
     const [selectedProf, setSelectedProf] = useState();
     const [sortBy, setSortBy] = useState({ path: "name", order: "asc" });
     const [users, setUsers] = useState();
+    const [serchedText, setSerchedText] = useState("");
     const pageSize = 4;
     useEffect(() => {
         api.professions.fetchAll().then((professions) => {
@@ -24,7 +26,13 @@ const Users = () => {
         setCurrentPage(1);
     }, [selectedProf]);
 
+    const handleChange = ({ target }) => {
+        setSerchedText(target.value);
+        setSelectedProf();
+    };
+
     const handleProfessionSelect = (params) => {
+        setSerchedText("");
         setSelectedProf(params);
     };
 
@@ -60,11 +68,15 @@ const Users = () => {
     };
 
     if (users) {
+        const serchedUsers = serchedText
+            ? users.filter((user) => user.name.toLowerCase().includes(serchedText.toLowerCase()))
+            : undefined;
+
         const filteredUsers = selectedProf
             ? users.filter((user) => JSON.stringify(user.profession) === JSON.stringify(selectedProf))
             : users;
         const sortedUsers = _.orderBy(filteredUsers, [sortBy.path], [sortBy.order]);
-        const count = filteredUsers.length;
+        const count = serchedText ? serchedUsers.length : filteredUsers.length;
         const usersCrop = paginate(sortedUsers, currentPage, pageSize);
 
         return (
@@ -81,9 +93,14 @@ const Users = () => {
                 )}
                 <div className="d-flex flex-column ">
                     <SearchStatus length={count} />
+                    <SerchInput
+                        name="usersSearch"
+                        handleChange={handleChange}
+                        serchedText={serchedText}
+                    />
                     {count > 0 && (
                         <UserTable
-                            users={usersCrop}
+                            users={serchedUsers || usersCrop}
                             onSort={handleSort}
                             selectedSort={sortBy}
                             onDelete={handleDelete}
