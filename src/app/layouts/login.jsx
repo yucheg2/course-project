@@ -1,83 +1,30 @@
-import React, { useEffect, useState } from "react";
-import TextField from "../components/textField";
-import { validator } from "../utils/validater";
+import React, { useState } from "react";
+import { useParams } from "react-router-dom";
+import LoginForm from "../components/ui/loginForm";
+import RegisterForm from "../components/ui/registerForm";
 
 const Login = () => {
-    const [data, setData] = useState({ email: "", password: "" });
-    const [errors, setErrors] = useState({});
+    const { type } = useParams();
+    const [formType, setFormType] = useState(type === "register" ? type : "login");
 
-    useEffect(() => {
-        validate();
-    }, [data]);
-    const validate = () => {
-        const errors = validator(data, validatorConfig);
-        setErrors(errors);
-        return Object.keys(errors).length === 0;
-    };
-    const isValid = Object.keys(errors).length === 0;
-
-    const validatorConfig = {
-        email: {
-            isRequired: {
-                message: "Электронная почта не заполнена"
-            },
-            isEmail: {
-                message: "Email введен не правильно :("
-            }
-        },
-        password: {
-            isRequired: {
-                message: "Пароль не заполнен"
-            },
-            isCapital: {
-                message: "Пароль должен содержать хотя бы одну заглавную букву"
-            },
-            isContainDigit: {
-                message: "Пароль должен содержать хотя бы одну цыфру"
-            },
-            min: {
-                message: "Пароль должен содержать минимум 8 символов",
-                value: 8
-            }
-        }
-    };
-
-    const handleChange = ({ target }) => {
-        setData((prevState) => ({
-            ...prevState,
-            [target.name]: target.value
-        }));
-    };
-
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        const isValid = validate();
-        if (!isValid) return;
-        console.log(data);
+    const toggleFormType = () => {
+        setFormType((prevState) => prevState === "register" ? "login" : "register");
     };
     return (
         <div className="container mt-3">
             <div className="row">
                 <div className="col-md-6 offset-md-3 shadow p-3">
-                    <h2 className="mb-2">Login</h2>
-                    <form onSubmit={handleSubmit}>
-                        <TextField
-                            label="Электронная почта"
-                            name="email"
-                            value={data.email}
-                            onChange={handleChange}
-                            error={errors.email}
-                        />
-                        <TextField
-                            label="Пароль"
-                            type="password"
-                            name="password"
-                            value={data.password}
-                            onChange={handleChange}
-                            error={errors.password}
-                        />
-                        <button disabled={!isValid} className="btn btn-primary w-100 mx-auto">Отправить</button>
-                    </form>
+                    { formType === "register"
+                        ? <>
+                            <h2 className="mb-2">Register</h2>
+                            <RegisterForm/>
+                            <p>Уже есть аккаунт?<a role="button" onClick={toggleFormType}> Войти</a></p>
+                        </>
+                        : <>
+                            <h2 className="mb-2">Login</h2>
+                            <LoginForm/>
+                            <p>Нет аккаунта?<a role="button" onClick={toggleFormType}> Регистрация</a></p>
+                        </>}
                 </div>
             </div>
         </div>

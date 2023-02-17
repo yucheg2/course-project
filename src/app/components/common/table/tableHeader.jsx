@@ -27,7 +27,7 @@ const TableHeader = ({ onSort, selectedSort, columns }) => {
                         {...{ role: columns[column].path && "button" }}
                         onClick={columns[column].path ? () => { handleSort(columns[column].path); } : undefined }
                         scope="col">
-                        <p>{columns[column].name} {toggleArrow(columns[column].path)}</p>
+                        <p className="user-select-none">{columns[column].name} {toggleArrow(columns[column].path)}</p>
                     </th>
                 ))}
             </tr>

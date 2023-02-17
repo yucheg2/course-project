@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useHistory } from "react-router-dom";
-import api from "../API/index";
-import QualitiesList from "./qualitieList";
+import api from "../../../API/index";
+import QualitiesList from "../../ui/qualitiest/qualitieList";
 
-const User = () => {
+const UserPage = () => {
     const [user, setUser] = useState();
     const { userId } = useParams();
     const history = useHistory();
@@ -15,7 +15,7 @@ const User = () => {
     }, []);
 
     const handleUsers = () => {
-        history.replace("/users");
+        history.push(`/users/${userId}/edit`);
     };
 
     return (
@@ -27,11 +27,11 @@ const User = () => {
                     <QualitiesList qualities={user.qualities}/>
                     <h2>Встретился, раз: {user.completedMeetings}</h2>
                     <h2>Оценка: {user.rate}</h2>
-                    <button onClick={handleUsers}>Все пользователи</button>
+                    <button onClick={handleUsers}>Изменить</button>
                 </>
             )
             : "Loading..."
     );
 };
 
-export default User;
+export default UserPage;
