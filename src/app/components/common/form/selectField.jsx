@@ -1,9 +1,9 @@
 import React from "react";
 import PropTypes from "prop-types";
 
-const SelectField = ({ label, value, onChange, defaultOption, options, error, name }) => {
+const SelectField = ({ label, value, onChange, defaultOption, options, errors, name }) => {
     const getSelectClass = () => {
-        return "form-select " + (error ? "is-invalid" : "");
+        return "form-select " + (errors ? "is-invalid" : "");
     };
     const handleChange = ({ target }) => {
         onChange({ [target.name]: target.value });
@@ -36,9 +36,9 @@ const SelectField = ({ label, value, onChange, defaultOption, options, error, na
                 );
             })}
         </select>
-        {error &&
+        {errors &&
         <div className="invalid-feedback">
-            {error}
+            {errors}
         </div>
         }
     </div>);
@@ -46,12 +46,12 @@ const SelectField = ({ label, value, onChange, defaultOption, options, error, na
 
 SelectField.propTypes = {
     name: PropTypes.string.isRequired,
-    label: PropTypes.string.isRequired,
+    label: PropTypes.string,
     value: PropTypes.string.isRequired,
     onChange: PropTypes.func.isRequired,
     defaultOption: PropTypes.string.isRequired,
     options: PropTypes.oneOfType(PropTypes.array, PropTypes.object),
-    error: PropTypes.string
+    errors: PropTypes.string
 };
 
 export default SelectField;

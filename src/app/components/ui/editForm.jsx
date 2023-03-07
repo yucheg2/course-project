@@ -58,31 +58,36 @@ const EditForm = ({ userData, qualities, professions }) => {
         }));
     };
 
-    const professionArray = !Array.isArray(professions) && typeof (professions) === "object"
-        ? Object.values(professions)
-        : professions;
-    console.log(professionArray);
-    const qualitiesArray = !Array.isArray(qualities) && typeof (qualities) === "object"
-        ? Object.values(qualities)
-        : qualities;
+    const getProfessionById = (profession) => {
+        const professionArray = !Array.isArray(professions) && typeof (professions) === "object"
+            ? Object.values(professions)
+            : professions;
+        return professionArray.find((p) => {
+            return p._id === profession;
+        });
+    };
+
+    const getQualities = (qual) => {
+        const qualitiesArray = !Array.isArray(qualities) && typeof (qualities) === "object"
+            ? Object.values(qualities)
+            : qualities;
+        return qualitiesArray.filter((q) => {
+            return qual.some((qual) => {
+                return q._id === qual.value;
+            });
+        });
+    };
+
     const handleSubmit = (e) => {
         e.preventDefault();
         const newData = {
             ...data,
-            qualities: qualitiesArray.filter((q) => {
-                return data.qualities.some((qual) => {
-                    return q._id === qual.value;
-                });
-            }),
-            profession: professionArray.find((p) => {
-                return p._id === data.profession;
-            })
+            qualities: getQualities(data.qualities),
+            profession: getProfessionById(data.profession)
         };
         const isValid = validate();
         if (isValid) {
-            API.users.update(userData._id, newData).then((data) => {
-                console.log(data);
-            });
+            API.users.update(userData._id, newData);
             push("/users/" + userData._id);
         }
     };
