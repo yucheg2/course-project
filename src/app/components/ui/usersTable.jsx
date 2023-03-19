@@ -3,6 +3,7 @@ import PropTypes from "prop-types";
 import BookMark from "../common/bookmark";
 import Qualities from "./qualitiest";
 import Table, { TableBody, TableHeader } from "../common/table";
+import Profession from "./profession";
 
 const UserTable = ({
     users,
@@ -15,7 +16,7 @@ const UserTable = ({
     const columns = {
         name: { path: "name", name: "Имя" },
         qualities: { name: "Качества", component: (user) => (<Qualities qualities={user.qualities}/>) },
-        professions: { path: "profession.name", name: "Профессия" },
+        professions: { component: (user) => (<Profession id={user.profession}/>), name: "Профессия" },
         completedMeetings: { path: "completedMeetings", name: "Встретился, раз" },
         rate: { path: "rate", name: "Оценка" },
         bookmark: {
