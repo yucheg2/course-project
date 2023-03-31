@@ -2,12 +2,14 @@ import React, { useEffect, useState } from "react";
 import TextField from "../common/form/textField";
 import { validator } from "../../utils/validater";
 import CheckBoxField from "../common/form/checkBoxField";
+import { useLogin } from "../../hooks/useLogin";
 // import * as yup from "yup";
 
 const LoginForm = () => {
+    const { signIn } = useLogin();
     const [data, setData] = useState({ email: "", password: "", stayOn: false });
     const [errors, setErrors] = useState({});
-
+    // console.log(process.env);//переменные окружения
     useEffect(() => {
         validate();
     }, [data]);
@@ -60,11 +62,15 @@ const LoginForm = () => {
         }));
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         const isValid = validate();
         if (!isValid) return;
-        console.log(data);
+        try {
+            await signIn(data);
+        } catch (error) {
+            setErrors(error);
+        }
     };
     return (
         <form onSubmit={handleSubmit}>

@@ -1,13 +1,17 @@
 import React, { useState, useEffect } from "react";
 import { validator } from "../../utils/validater";
 import TextField from "../common/form/textField";
-import api from "../../API";
 import SelectField from "../common/form/selectField";
 import RadioField from "../common/form/radioFild";
 import MultiSelectField from "../common/form/multiSelectField";
 import CheckBoxField from "../common/form/checkBoxField";
+import { useQualities } from "../../hooks/useQualities";
+import { useProfessons } from "../../hooks/useProfessions";
+import { useAuth } from "../../hooks/useAuth";
+import { useHistory } from "react-router-dom";
 
 const RegisterForm = () => {
+    const { push } = useHistory();
     const [data, setData] = useState({
         email: "",
         password: "",
@@ -16,17 +20,13 @@ const RegisterForm = () => {
         qualities: [],
         licence: false
     });
+    const { signUp } = useAuth();
     const [errors, setErrors] = useState({});
-    const [professions, setProfessions] = useState();
-    const [qualities, setQualities] = useState({});
-    useEffect(() => {
-        api.professions.fetchAll().then((data) => {
-            setProfessions(data);
-        });
-        api.qualities.fetchAll().then((data) => {
-            setQualities(data);
-        });
-    }, []);
+    const { professions } = useProfessons();
+    const { qualities } = useQualities();
+    const qualitiesList = qualities.map((q) => (
+        { label: q.name, value: q._id }
+    ));
     useEffect(() => {
         validate();
     }, [data]);
@@ -80,11 +80,22 @@ const RegisterForm = () => {
         }));
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         const isValid = validate();
         if (!isValid) return;
-        console.log(data);
+        const newData = {
+            ...data,
+            qualities: data.qualities.map((q) => q.value)
+        };
+        console.log(newData);
+        try {
+            await signUp(newData);
+            push("/");
+        } catch (error) {
+            console.log(error);
+            setErrors(error);
+        }
     };
     return (
         <form onSubmit={handleSubmit}>
@@ -121,7 +132,7 @@ const RegisterForm = () => {
             />
             <MultiSelectField
                 name="qualities"
-                options={qualities}
+                options={qualitiesList}
                 defaultValue={data.qualities}
                 onChange={handleChange}
                 label="Выберите ваши качества"
