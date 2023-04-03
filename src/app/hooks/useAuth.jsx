@@ -11,7 +11,12 @@ export const useAuth = () => {
     return useContext(AuthContext);
 };
 
-const httpAuth = axios.create();
+const httpAuth = axios.create({
+    baseURL: "https://identitytoolkit.googleapis.com/v1/",
+    params: {
+        key: process.env.REACT_APP_FIREBASE_KEY
+    }// после этот параметр запишется в url как ?key=...
+});
 
 const AuthProvider = ({ children }) => {
     const [currentUser, setCurrentUser] = useState({});
@@ -25,8 +30,28 @@ const AuthProvider = ({ children }) => {
             errorCatcher(error);
         }
     }
+
+    async function signIn({ email, password }) {
+        const url = `accounts:signInWithPassword`;
+        try {
+            const { data } = await httpAuth.post(url, { email, password, returnSecureToken: true });
+            setTokens(data);
+        } catch (error) {
+            const { code, message } = error.response.data.error;
+            if (code === 400) {
+                if (message === "INVALID_PASSWORD" || message === "EMAIL_NOT_FOUND") {
+                    throw new Error("Email или пароль введены неверно");
+                }
+                if (message.includes("TOO_MANY_ATTEMPTS_TRY_LATER")) {
+                    throw new Error("Слишком много попыток входа");
+                }
+            }
+            errorCatcher(error);
+        }
+    }
+
     async function signUp({ email, password, ...rest }) {
-        const url = `https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${process.env.REACT_APP_FIREBASE_KEY}`;
+        const url = `accounts:signUp`;
         try {
             const { data } = await httpAuth.post(url, { email, password, returnSecureToken: true });
             console.log(data);
@@ -59,7 +84,7 @@ const AuthProvider = ({ children }) => {
         }
     }, [error]);
     return (
-        <AuthContext.Provider value={{ signUp, currentUser }}>
+        <AuthContext.Provider value={{ signUp, signIn, currentUser }}>
             { children }
         </AuthContext.Provider>
     );

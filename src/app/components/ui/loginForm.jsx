@@ -2,13 +2,16 @@ import React, { useEffect, useState } from "react";
 import TextField from "../common/form/textField";
 import { validator } from "../../utils/validater";
 import CheckBoxField from "../common/form/checkBoxField";
-import { useLogin } from "../../hooks/useLogin";
+import { useAuth } from "../../hooks/useAuth";
+import { useHistory } from "react-router-dom";
 // import * as yup from "yup";
 
 const LoginForm = () => {
-    const { signIn } = useLogin();
+    const { signIn } = useAuth();
+    const { push } = useHistory();
     const [data, setData] = useState({ email: "", password: "", stayOn: false });
     const [errors, setErrors] = useState({});
+    const [enterError, setEnterError] = useState(null);
     // console.log(process.env);//переменные окружения
     useEffect(() => {
         validate();
@@ -33,24 +36,11 @@ const LoginForm = () => {
         email: {
             isRequired: {
                 message: "Электронная почта не заполнена"
-            },
-            isEmail: {
-                message: "Email введен не правильно :("
             }
         },
         password: {
             isRequired: {
                 message: "Пароль не заполнен"
-            },
-            isCapital: {
-                message: "Пароль должен содержать хотя бы одну заглавную букву"
-            },
-            isContainDigit: {
-                message: "Пароль должен содержать хотя бы одну цыфру"
-            },
-            min: {
-                message: "Пароль должен содержать минимум 8 символов",
-                value: 8
             }
         }
     };
@@ -60,6 +50,7 @@ const LoginForm = () => {
             ...prevState,
             ...target
         }));
+        setEnterError(null);
     };
 
     const handleSubmit = async (e) => {
@@ -68,8 +59,9 @@ const LoginForm = () => {
         if (!isValid) return;
         try {
             await signIn(data);
+            push("/");
         } catch (error) {
-            setErrors(error);
+            setEnterError(error.message);
         }
     };
     return (
@@ -96,7 +88,10 @@ const LoginForm = () => {
             >
                 Остаться в системе
             </CheckBoxField>
-            <button disabled={!isValid} className="btn btn-primary w-100 mx-auto">Отправить</button>
+            {
+                enterError && <p className="text-danger">{enterError}</p>
+            }
+            <button disabled={!isValid || enterError} className="btn btn-primary w-100 mx-auto">Отправить</button>
         </form>
     );
 };
