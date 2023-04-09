@@ -1,28 +1,25 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import PropTypes from "prop-types";
-import api from "../../../API/index";
+// import api from "../../../API/index";
 import { orderBy } from "lodash";
 import CommentsList from "./commentsList";
 import AddCommentForm from "./addCommentForm";
+import { useComments } from "../../../hooks/useComments";
 
-const CommentsListComponent = ({ userID }) => {
-    const [comments, setComments] = useState();
-    useEffect(() => {
-        api.comments.fetchCommentsForUser(userID).then((data) => {
-            setComments(data);
-        });
-    }, []);
+const CommentsListComponent = () => {
+    const { createComment, comments, removeComment } = useComments();
     const sortedComments = orderBy(comments, ["created_at"], ["desc"]);
     const onRemove = (id) => {
-        setComments(p => p.filter((c) => c._id !== id));
-        api.comments.remove(id);
+        removeComment(id);
+        // setComments(p => p.filter((c) => c._id !== id));
+        // api.comments.remove(id);
     };
-    console.log(comments);
     const handleSubmit = (data) => {
-        data.pageId = userID;
-        api.comments.add(data).then((data) => {
-            setComments(p => [...p, data]);
-        });
+        createComment(data);
+        // api.comments.add({ ...data, pageId: userID })
+        //     .then((data) => {
+        //         setComments(p => [...p, data]);
+        //     });
     };
     return (
         <>

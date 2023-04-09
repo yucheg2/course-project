@@ -9,14 +9,16 @@ import _ from "lodash";
 import SerchInput from "../../ui/searchInput";
 import { useUsers } from "../../../hooks/useUsers";
 import { useProfessons } from "../../../hooks/useProfessions";
+import { useAuth } from "../../../hooks/useAuth";
 
 const UsersListPage = () => {
     const [currentPage, setCurrentPage] = useState(1);
-    const { professions } = useProfessons();
+    const { professions, loading } = useProfessons();
     const [selectedProf, setSelectedProf] = useState();
     const [sortBy, setSortBy] = useState({ path: "name", order: "asc" });
     const [serchedText, setSerchedText] = useState("");
     const { users } = useUsers();
+    const { currentUser } = useAuth();
     const pageSize = 4;
     useEffect(() => {
         setCurrentPage(1);
@@ -44,9 +46,9 @@ const UsersListPage = () => {
         setSelectedProf();
     };
 
-    const handleDelete = (userId) => {
-        // setUsers(users.filter((user) => user._id !== userId));
-    };
+    // const handleDelete = (userId) => {
+    //     setUsers(users.filter((user) => user._id !== userId));
+    // };
     const handleToggleBookMark = (id) => {
         // setUsers(
         //     users.map((user) => {
@@ -58,20 +60,24 @@ const UsersListPage = () => {
         // );
     };
 
-    const serchedUsers = serchedText
-        ? users.filter((user) => user.name.toLowerCase().includes(serchedText.toLowerCase()))
-        : undefined;
+    function filterUsers(data) {
+        const filteredUsers = serchedText
+            ? data.filter((user) => user.name.toLowerCase().includes(serchedText.toLowerCase()))
+            : selectedProf
+                ? data.filter((user) => JSON.stringify(user.profession) === JSON.stringify(selectedProf))
+                : data;
+        return filteredUsers.filter((u) => u._id !== currentUser._id);
+    }
 
-    const filteredUsers = selectedProf
-        ? users.filter((user) => JSON.stringify(user.profession) === JSON.stringify(selectedProf))
-        : users;
-    const sortedUsers = _.orderBy((serchedUsers || filteredUsers), [sortBy.path], [sortBy.order]);
-    const count = serchedText ? (serchedUsers).length : (filteredUsers).length;
+    const filteredUsers = filterUsers(users);
+
+    const sortedUsers = _.orderBy((filteredUsers), [sortBy.path], [sortBy.order]);
+    const count = filteredUsers.length;
     const usersCrop = paginate(sortedUsers, currentPage, pageSize);
 
     return (
         <div className="d-flex">
-            {professions && (
+            {!loading && (
                 <div className="d-flex flex-column flex-shrink-0 p-3">
                     <GroupList
                         selectedItem = {selectedProf}
@@ -93,7 +99,7 @@ const UsersListPage = () => {
                         users={usersCrop}
                         onSort={handleSort}
                         selectedSort={sortBy}
-                        onDelete={handleDelete}
+                        // onDelete={handleDelete}
                         onToggleBookMark={handleToggleBookMark}
                     />
                 )}

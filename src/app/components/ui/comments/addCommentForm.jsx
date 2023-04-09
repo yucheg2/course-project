@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
-import SelectField from "../../common/form/selectField";
+// import SelectField from "../../common/form/selectField";
 import { validator } from "../../../utils/validater";
-import API from "../../../API";
+// import API from "../../../API";
 import TextAriaFiald from "../../common/form/textAriaField";
 
 const AddCommentForm = ({ onSubmit }) => {
-    const [data, setData] = useState({ userId: "", content: "" });
-    const [users, setUsers] = useState();
+    const [data, setData] = useState({});
+    // const [users, setUsers] = useState();
     const [error, setError] = useState({});
     const handleChange = (target) => {
         setData(p => (
@@ -18,11 +18,11 @@ const AddCommentForm = ({ onSubmit }) => {
         ));
     };
     const validateConfig = {
-        userId: {
-            isRequired: {
-                message: "Выберите человечка"
-            }
-        },
+        // userId: {
+        //     isRequired: {
+        //         message: "Выберите человечка"
+        //     }
+        // },
         content: {
             isRequired: {
                 message: "Сообщение не должно быть пустым"
@@ -35,20 +35,20 @@ const AddCommentForm = ({ onSubmit }) => {
         return Object.keys(errors).length === 0;
     };
     const isValid = Object.keys(error).length === 0;
-    useEffect(() => {
-        validate();
-        API.users.fetchAll().then((data) => {
-            setUsers(data);
-        });
-    }, []);
+    // useEffect(() => {
+    //     validate();
+    //     API.users.fetchAll().then((data) => {
+    //         setUsers(data);
+    //     });
+    // }, []);
     useEffect(() => {
         validate();
     }, [data]);
-    const usersArray = (users && users.map(user => {
-        return { _id: user._id, name: user.name };
-    }));
+    // const usersArray = (users && users.map(user => {
+    //     return { _id: user._id, name: user.name };
+    // }));
     const clear = () => {
-        setData({ userId: "", content: "" });
+        setData({});
         setError({});
     };
     const handleSubmit = (e) => {
@@ -63,16 +63,16 @@ const AddCommentForm = ({ onSubmit }) => {
         <div>
             <h1>New Comment</h1>
             <form onSubmit={handleSubmit} >
-                <SelectField
+                {/* <SelectField
                     value={data.userId}
                     onChange={handleChange}
                     defaultOption="Выберите пользователя"
                     options={usersArray}
                     errors={error.userId}
                     name="userId"
-                />
+                /> */}
                 <TextAriaFiald
-                    value={data.content}
+                    value={data.content || ""}
                     label="Сообщение"
                     name="content"
                     onChange={handleChange}

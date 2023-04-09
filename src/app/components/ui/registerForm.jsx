@@ -16,6 +16,7 @@ const RegisterForm = () => {
         email: "",
         password: "",
         profession: "",
+        name: "",
         sex: "Male",
         qualities: [],
         licence: false
@@ -44,6 +45,15 @@ const RegisterForm = () => {
             },
             isEmail: {
                 message: "Email введен не правильно :("
+            }
+        },
+        name: {
+            isRequired: {
+                message: "Имя не заполнено"
+            },
+            min: {
+                message: "Имя должно содержать минимум 3 символа",
+                value: 3
             }
         },
         password: {
@@ -88,7 +98,6 @@ const RegisterForm = () => {
             ...data,
             qualities: data.qualities.map((q) => q.value)
         };
-        console.log(newData);
         try {
             await signUp(newData);
             push("/");
@@ -105,6 +114,13 @@ const RegisterForm = () => {
                 value={data.email}
                 onChange={handleChange}
                 error={errors.email}
+            />
+            <TextField
+                label="Имя"
+                name="name"
+                value={data.name}
+                onChange={handleChange}
+                error={errors.name}
             />
             <TextField
                 label="Пароль"

@@ -5,18 +5,23 @@ import TextField from "../common/form/textField";
 import SelectField from "../common/form/selectField";
 import RadioField from "../common/form/radioFild";
 import MultiSelectField from "../common/form/multiSelectField";
-import API from "../../API";
 import { useHistory } from "react-router-dom";
+import { useProfessons } from "../../hooks/useProfessions";
+import { useAuth } from "../../hooks/useAuth";
 
 const EditForm = ({ userData, qualities, professions }) => {
     const { push } = useHistory();
+    const { createUser } = useAuth();
+    const { getProfessionById } = useProfessons();
+    const defaultProf = getProfessionById(userData.profession);
     const [data, setData] = useState({
         name: userData.name,
         email: userData.email,
-        profession: userData.profession._id,
+        profession: userData.profession,
         sex: userData.sex,
         qualities: userData.qualities.map((qualitie) => {
-            return { label: qualitie.name, value: qualitie._id };
+            const qualItem = qualities.find(q => q._id === qualitie);
+            return { label: qualItem.name, value: qualItem._id };
         })
     });
     const [errors, setErrors] = useState({});
@@ -58,36 +63,16 @@ const EditForm = ({ userData, qualities, professions }) => {
         }));
     };
 
-    const getProfessionById = (profession) => {
-        const professionArray = !Array.isArray(professions) && typeof (professions) === "object"
-            ? Object.values(professions)
-            : professions;
-        return professionArray.find((p) => {
-            return p._id === profession;
-        });
-    };
-
-    const getQualities = (qual) => {
-        const qualitiesArray = !Array.isArray(qualities) && typeof (qualities) === "object"
-            ? Object.values(qualities)
-            : qualities;
-        return qualitiesArray.filter((q) => {
-            return qual.some((qual) => {
-                return q._id === qual.value;
-            });
-        });
-    };
-
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         const newData = {
+            ...userData,
             ...data,
-            qualities: getQualities(data.qualities),
-            profession: getProfessionById(data.profession)
+            qualities: data.qualities.map(q => q.value)
         };
         const isValid = validate();
         if (isValid) {
-            API.users.update(userData._id, newData);
+            await createUser(newData);
             push("/users/" + userData._id);
         }
     };
@@ -112,7 +97,7 @@ const EditForm = ({ userData, qualities, professions }) => {
                 name="profession"
                 value={data.profession}
                 onChange={handleChange}
-                defaultOption={userData.profession.name}
+                defaultOption={defaultProf.name}
                 options={professions}
                 error= {errors.profession}
             />

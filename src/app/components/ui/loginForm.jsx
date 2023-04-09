@@ -8,7 +8,7 @@ import { useHistory } from "react-router-dom";
 
 const LoginForm = () => {
     const { signIn } = useAuth();
-    const { push } = useHistory();
+    const history = useHistory();
     const [data, setData] = useState({ email: "", password: "", stayOn: false });
     const [errors, setErrors] = useState({});
     const [enterError, setEnterError] = useState(null);
@@ -59,7 +59,10 @@ const LoginForm = () => {
         if (!isValid) return;
         try {
             await signIn(data);
-            push("/");
+            history.push(history.location.state?.from?.pathname !== undefined
+                ? history.location.state.from.pathname
+                : "/"
+            );
         } catch (error) {
             setEnterError(error.message);
         }

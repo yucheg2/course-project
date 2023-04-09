@@ -1,25 +1,23 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { useHistory, useParams } from "react-router-dom";
 import EditForm from "../../ui/editForm";
-import API from "../../../API";
+import { useProfessons } from "../../../hooks/useProfessions";
+import { useQualities } from "../../../hooks/useQualities";
+import { useUsers } from "../../../hooks/useUsers";
+import { useAuth } from "../../../hooks/useAuth";
 
 const EditPage = () => {
-    const [professions, setProfessions] = useState();
-    const [qualities, setQualities] = useState({});
-    const [userData, setUserData] = useState();
     const { userId } = useParams();
-    const { goBack } = useHistory();
-    useEffect(() => {
-        API.professions.fetchAll().then((data) => {
-            setProfessions(data);
-        });
-        API.qualities.fetchAll().then((data) => {
-            setQualities(data);
-        });
-        API.users.getById(userId).then((data) => {
-            setUserData(data);
-        });
-    }, []);
+    const { currentUser } = useAuth();
+
+    const { professions } = useProfessons();
+    const { qualities } = useQualities();
+    const { getUserById } = useUsers();
+    const userData = getUserById(userId);
+    const { goBack, replace } = useHistory();
+    if (currentUser._id !== userId) {
+        replace(`/users/${currentUser._id}/edit`);
+    }
     return (
         <div className="container mt-3">
             <button className="btn btn-primary" onClick={goBack}>
@@ -29,7 +27,7 @@ const EditPage = () => {
             </button>
             <div className="row">
                 <div className="col-md-6 offset-md-3 shadow p-3">
-                    {(userData && professions)
+                    {(userData && professions && qualities)
                         ? <EditForm
                             userData={userData}
                             professions={professions}
