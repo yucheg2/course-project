@@ -11,7 +11,7 @@ import { useAuth } from "../../hooks/useAuth";
 
 const EditForm = ({ userData, qualities, professions }) => {
     const { push } = useHistory();
-    const { createUser } = useAuth();
+    const { editUser } = useAuth();
     const { getProfessionById } = useProfessons();
     const defaultProf = getProfessionById(userData.profession);
     const [data, setData] = useState({
@@ -72,7 +72,7 @@ const EditForm = ({ userData, qualities, professions }) => {
         };
         const isValid = validate();
         if (isValid) {
-            await createUser(newData);
+            await editUser(newData);
             push("/users/" + userData._id);
         }
     };

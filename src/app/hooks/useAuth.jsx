@@ -35,6 +35,18 @@ const AuthProvider = ({ children }) => {
         }
     }
 
+    async function editUser(data) {
+        try {
+            if (currentUser) {
+                const { content } = await usersService.edit(data);
+                console.log(content);
+                setCurrentUser(content);
+            }
+        } catch (error) {
+            errorCatcher(error);
+        }
+    }
+
     async function signIn({ email, password }) {
         const url = `accounts:signInWithPassword`;
         try {
@@ -128,7 +140,7 @@ const AuthProvider = ({ children }) => {
         }
     }, [error]);
     return (
-        <AuthContext.Provider value={{ signUp, signIn, currentUser, logOut, createUser }}>
+        <AuthContext.Provider value={{ signUp, editUser, signIn, currentUser, logOut, createUser }}>
             {!loading ? children : "loading..." }
         </AuthContext.Provider>
     );
