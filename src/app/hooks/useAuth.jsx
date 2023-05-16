@@ -39,7 +39,6 @@ const AuthProvider = ({ children }) => {
         try {
             if (currentUser) {
                 const { content } = await usersService.edit(data);
-                console.log(content);
                 setCurrentUser(content);
             }
         } catch (error) {

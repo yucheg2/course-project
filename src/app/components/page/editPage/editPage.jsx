@@ -4,20 +4,15 @@ import EditForm from "../../ui/editForm";
 import { useProfessons } from "../../../hooks/useProfessions";
 import { useQualities } from "../../../hooks/useQualities";
 import { useUsers } from "../../../hooks/useUsers";
-import { useAuth } from "../../../hooks/useAuth";
 
 const EditPage = () => {
     const { userId } = useParams();
-    const { currentUser } = useAuth();
 
     const { professions } = useProfessons();
     const { qualities } = useQualities();
     const { getUserById } = useUsers();
     const userData = getUserById(userId);
-    const { goBack, replace } = useHistory();
-    if (currentUser._id !== userId) {
-        replace(`/users/${currentUser._id}/edit`);
-    }
+    const { goBack } = useHistory();
     return (
         <div className="container mt-3">
             <button className="btn btn-primary" onClick={goBack}>

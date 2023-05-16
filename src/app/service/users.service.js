@@ -5,7 +5,7 @@ const usersEndPoint = "user/";
 
 const usersService = {
     edit: async (payload) => {
-        const { data } = await httpService.put(usersEndPoint + payload._id, payload);
+        const { data } = await httpService.patch(usersEndPoint + localStorageService.getUserId(), payload);
         return data;
     },
     get: async () => {

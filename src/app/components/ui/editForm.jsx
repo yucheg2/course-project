@@ -15,10 +15,7 @@ const EditForm = ({ userData, qualities, professions }) => {
     const { getProfessionById } = useProfessons();
     const defaultProf = getProfessionById(userData.profession);
     const [data, setData] = useState({
-        name: userData.name,
-        email: userData.email,
-        profession: userData.profession,
-        sex: userData.sex,
+        ...userData,
         qualities: userData.qualities.map((qualitie) => {
             const qualItem = qualities.find(q => q._id === qualitie);
             return { label: qualItem.name, value: qualItem._id };
@@ -66,7 +63,6 @@ const EditForm = ({ userData, qualities, professions }) => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         const newData = {
-            ...userData,
             ...data,
             qualities: data.qualities.map(q => q.value)
         };
