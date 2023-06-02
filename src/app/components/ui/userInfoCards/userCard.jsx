@@ -1,12 +1,14 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { useProfessons } from "../../../hooks/useProfessions";
+// import { useProfessons } from "../../../hooks/useProfessions";
 import { useAuth } from "../../../hooks/useAuth";
+import { useSelector } from "react-redux";
+import { getProfessionById } from "../../../store/professions";
 
 const UserCard = ({ user, onClick }) => {
     const { currentUser } = useAuth();
-    const { getProfessionById } = useProfessons();
-    const prof = getProfessionById(user.profession);
+    // const { getProfessionById } = useProfessons();
+    const prof = useSelector(getProfessionById(user.profession));
     return (
         <div className="card mb-3">
             <div className="card-body">

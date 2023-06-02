@@ -6,14 +6,17 @@ import SelectField from "../common/form/selectField";
 import RadioField from "../common/form/radioFild";
 import MultiSelectField from "../common/form/multiSelectField";
 import { useHistory } from "react-router-dom";
-import { useProfessons } from "../../hooks/useProfessions";
+// import { useProfessons } from "../../hooks/useProfessions";
 import { useAuth } from "../../hooks/useAuth";
+import { useSelector } from "react-redux";
+import { getProfessionById } from "../../store/professions";
 
 const EditForm = ({ userData, qualities, professions }) => {
     const { push } = useHistory();
     const { editUser } = useAuth();
-    const { getProfessionById } = useProfessons();
-    const defaultProf = getProfessionById(userData.profession);
+    // const { getProfessionById } = useProfessons();
+    // const defaultProf = getProfessionById(userData.profession);
+    const defaultProf = useSelector(getProfessionById(userData.profession));
     const [data, setData] = useState({
         ...userData,
         qualities: userData.qualities.map((qualitie) => {
@@ -73,6 +76,7 @@ const EditForm = ({ userData, qualities, professions }) => {
         }
     };
     return (
+        userData &&
         <form onSubmit={handleSubmit}>
             <TextField
                 label="Имя"

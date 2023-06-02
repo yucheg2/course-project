@@ -8,12 +8,16 @@ import UserTable from "../../ui/usersTable";
 import _ from "lodash";
 import SerchInput from "../../ui/searchInput";
 import { useUsers } from "../../../hooks/useUsers";
-import { useProfessons } from "../../../hooks/useProfessions";
+// import { useProfessons } from "../../../hooks/useProfessions";
 import { useAuth } from "../../../hooks/useAuth";
+import { useSelector } from "react-redux";
+import { getProfessionsList, getProfessionsLoading } from "../../../store/professions";
 
 const UsersListPage = () => {
     const [currentPage, setCurrentPage] = useState(1);
-    const { professions, loading } = useProfessons();
+    // const { professions, loading } = useProfessons();
+    const professions = useSelector(getProfessionsList());
+    const loading = useSelector(getProfessionsLoading());
     const [selectedProf, setSelectedProf] = useState();
     const [sortBy, setSortBy] = useState({ path: "name", order: "asc" });
     const [serchedText, setSerchedText] = useState("");

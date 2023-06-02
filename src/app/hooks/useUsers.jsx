@@ -18,7 +18,6 @@ const UserProvider = ({ children }) => {
         if (!isLoading) {
             const newUsers = [...users];
             const index = newUsers.findIndex((user) => user._id === currentUser._id);
-            console.log(index);
             newUsers[index] = currentUser;
             setUsers(newUsers);
         }
