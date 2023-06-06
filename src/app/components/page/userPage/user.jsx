@@ -4,12 +4,14 @@ import PropTypes from "prop-types";
 import UserPageLayout from "../../../layouts/userPageLayout";
 import { MeetingsCard, QualitiesCard, UserCard } from "../../ui/userInfoCards/index";
 import CommentsListComponent from "../../ui/comments/commentsListComponent";
-import { useUsers } from "../../../hooks/useUsers";
+// import { useUsers } from "../../../hooks/useUsers";
 import CommentProvider from "../../../hooks/useComments";
+import { useSelector } from "react-redux";
+import { getUserById } from "../../../store/users";
 
 const UserPage = ({ userId }) => {
-    const { getUserById } = useUsers();
-    const user = getUserById(userId);
+    // const { getUserById } = useUsers();
+    const user = useSelector(getUserById(userId));
     const history = useHistory();
 
     const handleUsers = () => {

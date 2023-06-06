@@ -5,15 +5,17 @@ import TextField from "../common/form/textField";
 import SelectField from "../common/form/selectField";
 import RadioField from "../common/form/radioFild";
 import MultiSelectField from "../common/form/multiSelectField";
-import { useHistory } from "react-router-dom";
+// import { useHistory } from "react-router-dom";
 // import { useProfessons } from "../../hooks/useProfessions";
-import { useAuth } from "../../hooks/useAuth";
-import { useSelector } from "react-redux";
+// import { useAuth } from "../../hooks/useAuth";
+import { useDispatch, useSelector } from "react-redux";
 import { getProfessionById } from "../../store/professions";
+import { editUser } from "../../store/users";
 
 const EditForm = ({ userData, qualities, professions }) => {
-    const { push } = useHistory();
-    const { editUser } = useAuth();
+    // const { push } = useHistory();
+    // const { editUser } = useAuth();
+    const dispatch = useDispatch();
     // const { getProfessionById } = useProfessons();
     // const defaultProf = getProfessionById(userData.profession);
     const defaultProf = useSelector(getProfessionById(userData.profession));
@@ -71,8 +73,7 @@ const EditForm = ({ userData, qualities, professions }) => {
         };
         const isValid = validate();
         if (isValid) {
-            await editUser(newData);
-            push("/users/" + userData._id);
+            dispatch(editUser(newData));
         }
     };
     return (

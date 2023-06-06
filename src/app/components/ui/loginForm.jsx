@@ -2,13 +2,18 @@ import React, { useEffect, useState } from "react";
 import TextField from "../common/form/textField";
 import { validator } from "../../utils/validater";
 import CheckBoxField from "../common/form/checkBoxField";
-import { useAuth } from "../../hooks/useAuth";
-import { useHistory } from "react-router-dom";
+// import { useAuth } from "../../hooks/useAuth";
+// import { useHistory } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { logIn } from "../../store/users";
+import history from "../../utils/history";
 // import * as yup from "yup";
 
 const LoginForm = () => {
-    const { signIn } = useAuth();
-    const history = useHistory();
+    // const { signIn } = useAuth();
+    const dispatch = useDispatch();
+
+    // const history = useHistory();
     const [data, setData] = useState({ email: "", password: "", stayOn: false });
     const [errors, setErrors] = useState({});
     const [enterError, setEnterError] = useState(null);
@@ -53,19 +58,23 @@ const LoginForm = () => {
         setEnterError(null);
     };
 
-    const handleSubmit = async (e) => {
+    const handleSubmit = (e) => {
         e.preventDefault();
         const isValid = validate();
         if (!isValid) return;
-        try {
-            await signIn(data);
-            history.push(history.location.state?.from?.pathname !== undefined
-                ? history.location.state.from.pathname
-                : "/"
-            );
-        } catch (error) {
-            setEnterError(error.message);
-        }
+        // try {
+        //     await signIn(data);
+        //     history.push(history.location.state?.from?.pathname !== undefined
+        //         ? history.location.state.from.pathname
+        //         : "/"
+        //     );
+        // } catch (error) {
+        //     setEnterError(error.message);
+        // }
+        const redirect = history.location?.state?.from?.pathname !== undefined
+            ? history.location.state.from.pathname
+            : "/";
+        dispatch(logIn({ data, redirect }));
     };
     return (
         <form onSubmit={handleSubmit}>

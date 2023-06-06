@@ -33,7 +33,7 @@ export const loadProfessionsList = () => async (dispatch) => {
         const { content } = await professionsService.get();
         dispatch(receved(content));
     } catch (error) {
-        const { message } = error.response.data;
+        const { message } = error;
         dispatch(requestFiled(message));
     }
 };
@@ -42,7 +42,6 @@ export const getProfessionById = (id) => (state) => {
     if (state.professions.entities) {
         return state.professions.entities.find((prof) => prof._id === id);
     }
-    return null;
 };
 
 export const getProfessionsList = () => (state) => {

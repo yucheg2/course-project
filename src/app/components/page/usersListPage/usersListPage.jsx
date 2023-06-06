@@ -7,11 +7,12 @@ import SearchStatus from "../../ui/searchStatus";
 import UserTable from "../../ui/usersTable";
 import _ from "lodash";
 import SerchInput from "../../ui/searchInput";
-import { useUsers } from "../../../hooks/useUsers";
+// import { useUsers } from "../../../hooks/useUsers";
 // import { useProfessons } from "../../../hooks/useProfessions";
-import { useAuth } from "../../../hooks/useAuth";
+// import { useAuth } from "../../../hooks/useAuth";
 import { useSelector } from "react-redux";
 import { getProfessionsList, getProfessionsLoading } from "../../../store/professions";
+import { getCurrentUserId, getUsersList } from "../../../store/users";
 
 const UsersListPage = () => {
     const [currentPage, setCurrentPage] = useState(1);
@@ -21,8 +22,10 @@ const UsersListPage = () => {
     const [selectedProf, setSelectedProf] = useState();
     const [sortBy, setSortBy] = useState({ path: "name", order: "asc" });
     const [serchedText, setSerchedText] = useState("");
-    const { users } = useUsers();
-    const { currentUser } = useAuth();
+    // const { users } = useUsers();
+    const users = useSelector(getUsersList());
+    // const { currentUser } = useAuth();
+    const currentUserId = useSelector(getCurrentUserId());
     const pageSize = 4;
     useEffect(() => {
         setCurrentPage(1);
@@ -70,7 +73,7 @@ const UsersListPage = () => {
             : selectedProf
                 ? data.filter((user) => JSON.stringify(user.profession) === JSON.stringify(selectedProf))
                 : data;
-        return filteredUsers.filter((u) => u._id !== currentUser._id);
+        return filteredUsers.filter((u) => u._id !== currentUserId);
     }
 
     const filteredUsers = filterUsers(users);

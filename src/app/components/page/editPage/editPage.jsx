@@ -3,10 +3,11 @@ import { useHistory, useParams } from "react-router-dom";
 import EditForm from "../../ui/editForm";
 // import { useProfessons } from "../../../hooks/useProfessions";
 // import { useQualities } from "../../../hooks/useQualities";
-import { useUsers } from "../../../hooks/useUsers";
+// import { useUsers } from "../../../hooks/useUsers";
 import { useSelector } from "react-redux";
 import { getQualitiesList, getQualitiesLoading } from "../../../store/qualities";
 import { getProfessionsList, getProfessionsLoading } from "../../../store/professions";
+import { getUserById } from "../../../store/users";
 
 const EditPage = () => {
     const { userId } = useParams();
@@ -17,8 +18,10 @@ const EditPage = () => {
     const qualities = useSelector(getQualitiesList());
     const qualitiesLoading = useSelector(getQualitiesLoading());
     // const { qualities } = useQualities();
-    const { getUserById } = useUsers();
-    const userData = getUserById(userId);
+    // const { getUserById } = useUsers();
+    // const userData = getUserById(userId);
+    const userData = useSelector(getUserById(userId));
+
     const { goBack } = useHistory();
     return (
         <div className="container mt-3">
