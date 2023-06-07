@@ -2,6 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 import authService from "../service/auth.serice";
 import localStorageService from "../service/localStorage.service";
 import usersService from "../service/users.service";
+import generateAuthError from "../utils/generateAuthError";
 import history from "../utils/history";
 import randomInt from "../utils/randomInt";
 
@@ -48,7 +49,7 @@ const usersSlice = createSlice({
             state.auth.userId = action.payload;
         },
         authReqestFaild(state, action) {
-            state.error = action.payload;
+            state.auth.AuthError = action.payload;
         },
         userCreated(state, action) {
             if (state.entities === null) {
@@ -67,6 +68,9 @@ const usersSlice = createSlice({
                 ...state.entities[currentUserInd],
                 ...action.payload
             };
+        },
+        authRequested(state) {
+            state.auth.AuthError = null;
         }
     }
 });
@@ -81,7 +85,8 @@ const {
     authReqestFaild,
     userCreated,
     userLoggedOut,
-    userEditRequestSuccess
+    userEditRequestSuccess,
+    authRequested
 } = actions;
 
 export const loadUsersList = () => async (dispatch) => {
@@ -94,6 +99,9 @@ export const loadUsersList = () => async (dispatch) => {
     }
 };
 
+export const getAuthError = () => (state) => {
+    return state.users.auth.AuthError;
+};
 export const getDataStatus = () => (state) => {
     return state.users.dataLoaded;
 };
@@ -142,7 +150,7 @@ export const logOut = () => (dispatch) => {
 };
 
 export const logIn = ({ data, redirect }) => async (dispatch) => {
-    dispatch({ type: "users/authRequested" });
+    dispatch(authRequested());
     const { email, password } = data;
     try {
         const data = await authService.login({ email, password });
@@ -150,7 +158,13 @@ export const logIn = ({ data, redirect }) => async (dispatch) => {
         dispatch(authReqestSuccess(data.localId));
         history.push(redirect);
     } catch (error) {
-        dispatch(authReqestFaild(error.message));
+        const { code, message } = error.response.data.error;
+        if (code === 400) {
+            const errorMessage = generateAuthError(message);
+            dispatch(authReqestFaild(errorMessage));
+        } else {
+            dispatch(authReqestFaild(error.message));
+        }
     }
 };
 
@@ -166,7 +180,7 @@ export const editUser = (data) => async (dispatch) => {
 };
 
 export const signUp = ({ email, password, ...rest }) => async (dispatch) => {
-    dispatch({ type: "users/authRequested" });
+    dispatch(authRequested());
     try {
         const data = await authService.register({ email, password });
         localStorageService.setTokens(data);

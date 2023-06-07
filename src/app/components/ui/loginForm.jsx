@@ -4,19 +4,20 @@ import { validator } from "../../utils/validater";
 import CheckBoxField from "../common/form/checkBoxField";
 // import { useAuth } from "../../hooks/useAuth";
 // import { useHistory } from "react-router-dom";
-import { useDispatch } from "react-redux";
-import { logIn } from "../../store/users";
+import { useDispatch, useSelector } from "react-redux";
+import { getAuthError, logIn } from "../../store/users";
 import history from "../../utils/history";
 // import * as yup from "yup";
 
 const LoginForm = () => {
     // const { signIn } = useAuth();
     const dispatch = useDispatch();
+    const logginError = useSelector(getAuthError());
 
     // const history = useHistory();
     const [data, setData] = useState({ email: "", password: "", stayOn: false });
     const [errors, setErrors] = useState({});
-    const [enterError, setEnterError] = useState(null);
+    // const [enterError, setEnterError] = useState(null);
     // console.log(process.env);//переменные окружения
     useEffect(() => {
         validate();
@@ -55,7 +56,7 @@ const LoginForm = () => {
             ...prevState,
             ...target
         }));
-        setEnterError(null);
+        // setEnterError(null);
     };
 
     const handleSubmit = (e) => {
@@ -101,9 +102,9 @@ const LoginForm = () => {
                 Остаться в системе
             </CheckBoxField>
             {
-                enterError && <p className="text-danger">{enterError}</p>
+                logginError && <p className="text-danger">{logginError}</p>
             }
-            <button disabled={!isValid || enterError} className="btn btn-primary w-100 mx-auto">Отправить</button>
+            <button disabled={!isValid} className="btn btn-primary w-100 mx-auto">Отправить</button>
         </form>
     );
 };
