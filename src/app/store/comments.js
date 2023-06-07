@@ -72,7 +72,6 @@ export const removeComment = (id) => async (dispatch) => {
     dispatch({ type: "comments/deleteRequested" });
     try {
         const { content } = await commentService.deleteComment(id);
-        console.log(content);
         if (content === null) {
             dispatch(deleteRequestSuccess(id));
         }
